@@ -8,17 +8,18 @@ import (
 	"sync"
 	"time"
 
-	pb "github.com/Jille/raftadmin/proto"
+	pb "github.com/dihedron/raftadmin/proto"
 	"github.com/hashicorp/raft"
 	"google.golang.org/grpc"
 )
 
 type admin struct {
 	r *raft.Raft
+	pb.UnimplementedRaftAdminServer
 }
 
 func Get(r *raft.Raft) pb.RaftAdminServer {
-	return &admin{r}
+	return &admin{r: r}
 }
 
 func Register(s *grpc.Server, r *raft.Raft) {
@@ -27,7 +28,7 @@ func Register(s *grpc.Server, r *raft.Raft) {
 
 func timeout(ctx context.Context) time.Duration {
 	if dl, ok := ctx.Deadline(); ok {
-		return dl.Sub(time.Now())
+		return time.Until(dl)
 	}
 	return 0
 }
