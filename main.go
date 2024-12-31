@@ -10,7 +10,7 @@ import (
 	"strconv"
 	"strings"
 
-	pb "github.com/Jille/raftadmin/proto"
+	pb "github.com/dihedron/raftadmin/proto"
 	"github.com/iancoleman/strcase"
 	"google.golang.org/grpc"
 	"google.golang.org/protobuf/encoding/prototext"
@@ -73,7 +73,7 @@ func messageFromDescriptor(d protoreflect.MessageDescriptor) protoreflect.Messag
 
 func do() error {
 	ctx := context.Background()
-	methods := pb.File_raftadmin_proto.Services().ByName("RaftAdmin").Methods()
+	methods := pb.File_proto_raftadmin_proto.Services().ByName("RaftAdmin").Methods()
 	leader := flag.Bool("leader", false, "Whether to dial to the leader (requires https://github.com/Jille/raft-grpc-leader-rpc)")
 	healthCheckService := flag.String("health_check_service", "quis.RaftLeader", "Which gRPC service to health check when searching for the leader")
 	flag.Parse()
@@ -84,7 +84,7 @@ func do() error {
 			commands = append(commands, strcase.ToSnake(string(methods.Get(i).Name())))
 		}
 		sort.Strings(commands)
-		return fmt.Errorf("Usage: raftadmin <host:port> <command> <args...>\nCommands: %s", strings.Join(commands, ", "))
+		return fmt.Errorf("usage: raftadmin <host:port> <command> <args...>\nCommands: %s", strings.Join(commands, ", "))
 	}
 
 	target := flag.Arg(0)
@@ -111,7 +111,7 @@ func do() error {
 		for _, f := range fields {
 			names = append(names, fmt.Sprintf("<%s>", f.TextName()))
 		}
-		return fmt.Errorf("Usage: raftadmin <host:port> %s %s", command, strings.Join(names, " "))
+		return fmt.Errorf("usage: raftadmin <host:port> %s %s", command, strings.Join(names, " "))
 	}
 
 	// Convert given strings to the right type and set them on the request proto.
